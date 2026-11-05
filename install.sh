@@ -7,13 +7,15 @@
 # uv downloads a suitable Python by itself, so no Python is needed beforehand.
 #
 # Environment overrides:
-#   DISKSCAN_SOURCE   what to install (default: diskscan-tui from PyPI). Can be a
-#                     git URL ("git+https://github.com/guillemgonzalez/diskscan") or a local
-#                     path to a checkout.
+#   DISKSCAN_SOURCE   what to install. Default: diskscan-tui from PyPI if it is
+#                     published there, otherwise the latest code from GitHub.
+#                     Can be a git URL ("git+https://github.com/guillemgonzalez/diskscan"),
+#                     a tag ("...diskscan@v0.1.0") or a local path to a checkout.
 #   DISKSCAN_NO_MODIFY_PATH=1   don't touch shell profiles.
 set -eu
 
-SOURCE="${DISKSCAN_SOURCE:-diskscan-tui}"
+PYPI_NAME="diskscan-tui"
+REPO="https://github.com/guillemgonzalez/diskscan"
 
 bold() { printf '\033[1m%s\033[0m\n' "$*"; }
 info() { printf '\033[38;2;217;119;87m›\033[0m %s\n' "$*"; }
@@ -43,6 +45,15 @@ else
 fi
 
 # 2. diskscan ----------------------------------------------------------------
+if [ -n "${DISKSCAN_SOURCE:-}" ]; then
+  SOURCE="$DISKSCAN_SOURCE"
+elif curl -fsS -o /dev/null "https://pypi.org/pypi/$PYPI_NAME/json" 2>/dev/null; then
+  SOURCE="$PYPI_NAME"
+elif command -v git >/dev/null 2>&1; then
+  SOURCE="git+$REPO"           # not on PyPI yet: install from GitHub
+else
+  SOURCE="$PYPI_NAME @ $REPO/archive/refs/heads/main.tar.gz"   # no git: use the source archive
+fi
 info "installing diskscan from: $SOURCE"
 "$UV" tool install --force --upgrade "$SOURCE"
 

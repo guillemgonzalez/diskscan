@@ -59,3 +59,44 @@ def test_main_version_and_update_dispatch(monkeypatch, capsys):
     with pytest.raises(SystemExit) as e:
         diskscan.main(["update"])
     assert e.value.code == 7
+
+
+def test_update_cmd_uses_pypi_when_published(monkeypatch):
+    monkeypatch.setattr(updater, "on_pypi", lambda: True)
+    assert updater._uv_update_cmd("uv") == ["uv", "tool", "install", "--force", "--upgrade", "diskscan-tui"]
+
+
+def test_update_cmd_falls_back_to_github(monkeypatch):
+    monkeypatch.setattr(updater, "on_pypi", lambda: False)
+    monkeypatch.setattr(updater.shutil, "which", lambda c: "/usr/bin/git" if c == "git" else None)
+    cmd = updater._uv_update_cmd("uv")
+    assert cmd[-1] == "git+https://github.com/guillemgonzalez/diskscan"
+    assert "--reinstall-package" in cmd and "--refresh-package" in cmd
+
+    monkeypatch.setattr(updater.shutil, "which", lambda c: None)  # no git -> source archive
+    assert updater._uv_update_cmd("uv")[-1].endswith("/archive/refs/heads/main.tar.gz")
+
+
+def test_fetch_latest_falls_back_to_github_pyproject(monkeypatch):
+    import io
+    import urllib.error
+
+    def fake_get(url, timeout):
+        if url == updater.PYPI_URL:
+            raise urllib.error.HTTPError(url, 404, "Not Found", None, None)
+        return io.BytesIO(b'[project]\nname = "diskscan-tui"\nversion = "0.3.1"\n')
+
+    monkeypatch.setattr(updater, "_get", fake_get)
+    assert updater._fetch_latest() == "0.3.1"
+
+
+def test_find_uv_checks_default_install_dir(tmp_path, monkeypatch):
+    bindir = tmp_path / ".local" / "bin"
+    bindir.mkdir(parents=True)
+    uv = bindir / "uv"
+    uv.write_text("#!/bin/sh\n")
+    uv.chmod(0o755)
+    monkeypatch.setattr(updater.shutil, "which", lambda c: None)
+    monkeypatch.delenv("XDG_BIN_HOME", raising=False)
+    monkeypatch.setenv("HOME", str(tmp_path))
+    assert updater.find_uv() == str(uv)

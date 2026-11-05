@@ -8,11 +8,12 @@
 [![Python](https://img.shields.io/badge/python-3.13%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org)
 [![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux-lightgrey?style=flat-square)](#install)
 [![Built with Textual](https://img.shields.io/badge/built%20with-Textual-7DD3FC?style=flat-square)](https://textual.textualize.io)
+[![License: PolyForm Noncommercial](https://img.shields.io/badge/license-PolyForm%20Noncommercial-E5484D?style=flat-square)](LICENSE)
 [![SemVer](https://img.shields.io/badge/semver-2.0.0-8B5CF6?style=flat-square)](https://semver.org)
 
 <img src="docs/assets/overview.svg" alt="diskscan showing project folders sorted by the space their venvs and node_modules use" width="900">
 
-[Install](#install) · [Usage](#usage) · [Keys](#keys) · [How it works](#how-it-works) · [Updating](#updating) · [Changelog](CHANGELOG.md)
+[Install](#install) · [Usage](#usage) · [Keys](#keys) · [How it works](#how-it-works) · [Updating](#updating) · [Changelog](CHANGELOG.md) · [License](#license)
 
 </div>
 
@@ -47,12 +48,14 @@ curl -fsSL https://raw.githubusercontent.com/guillemgonzalez/diskscan/main/insta
 The installer sets up [uv](https://docs.astral.sh/uv/) if you don't have it, then installs diskscan as an isolated
 tool. uv fetches its own Python, so nothing else is needed. Works on **macOS** and **Linux**.
 
+It installs from PyPI when a release is published there, and otherwise straight from this GitHub repo.
+
 <details>
 <summary><b>Other ways to install</b></summary>
 
 <br>
 
-With uv or pipx (the PyPI package is `diskscan-tui`; the command is `diskscan`):
+With uv or pipx, once published on PyPI (the package is `diskscan-tui`; the command is `diskscan`):
 
 ```sh
 uv tool install diskscan-tui
@@ -165,9 +168,10 @@ Full details, including what's skipped while scanning and how the split percenta
 diskscan update
 ```
 
-This upgrades in place with `uv tool upgrade` (or `pipx upgrade` if you installed with pipx).
+This upgrades in place with uv (or `pipx upgrade` if you installed with pipx): from PyPI when published there,
+otherwise to the latest code on GitHub.
 
-When you open diskscan it checks PyPI for a newer version, at most once a day and in the background. If there is one
+When you open diskscan it checks for a newer version (PyPI, or GitHub before the first PyPI release), at most once a day and in the background. If there is one
 you'll see an **Update available** notice. The check never blocks the app and stays silent when offline.
 Turn it off with `DISKSCAN_NO_UPDATE_CHECK=1`.
 
@@ -282,3 +286,14 @@ DISKSCAN_SOURCE="$PWD" sh install.sh
 ```
 
 </details>
+
+## License
+
+diskscan is **free for any noncommercial use**: personal projects, study, research, hobby work, and use by charities,
+schools and public institutions. You can use it, change it and share it, as long as the license goes with it.
+
+**Commercial use is not allowed** under this license, including using it inside a company for business work or
+selling it or a product built on it. If you'd like a commercial license, [open an issue](https://github.com/guillemgonzalez/diskscan/issues).
+
+Licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE).
+Copyright © 2026 Guillem Gonzalez.

@@ -7,6 +7,8 @@ authors = [
     { name = "Guillem Gonzalez", email = "49951286+guillemgonzalez@users.noreply.github.com" }
 ]
 requires-python = ">=3.13"
+license = "PolyForm-Noncommercial-1.0.0"
+license-files = ["LICENSE"]
 keywords = ["disk-usage", "node_modules", "virtualenv", "venv", "cleanup", "tui", "textual"]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -34,7 +36,7 @@ Issues = "https://github.com/guillemgonzalez/diskscan/issues"
 module-name = "diskscan"
 
 [build-system]
-requires = ["uv_build>=0.9.27,<0.10.0"]
+requires = ["uv_build>=0.9.27,<1"]
 build-backend = "uv_build"
 
 [dependency-groups]

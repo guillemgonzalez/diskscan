@@ -12,8 +12,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Linux support for reveal (`o`): file manager via D-Bus `FileManager1`, falling back to `xdg-open`.
 - Linux support for copy (`c`): `wl-copy`, `xclip` or `xsel`, falling back to the terminal clipboard (OSC 52) over SSH.
 
+### Fixed
+
+- The installer failed with "diskscan-tui was not found in the package registry" because the package isn't on PyPI yet. It now installs from GitHub when PyPI doesn't have it (via git, or the source archive when git isn't installed).
+- `diskscan update` failed when uv wasn't on `PATH` (e.g. right after a fresh install). It now finds uv in its default install location, and updates from GitHub until the package is on PyPI.
+- The update check also reads the latest version from GitHub until the package is on PyPI.
+
 ### Changed
 
+- Licensed under the PolyForm Noncommercial License 1.0.0 (free for noncommercial use; commercial use needs permission).
 - Scanning from `/` skips the Linux pseudo-filesystems `/proc`, `/sys`, `/dev` and `/run`.
 - The test suite now runs on Linux (the unreadable-folder test is skipped when running as root).
 
