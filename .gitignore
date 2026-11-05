@@ -1,0 +1,15 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Environments / tooling
+.venv/
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# macOS
+.DS_Store
