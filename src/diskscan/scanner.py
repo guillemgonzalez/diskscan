@@ -50,6 +50,9 @@ SKIP_DIR_NAMES = frozenset({
 # macOS bundles that are opaque to the user (an Electron .app ships its own
 # node_modules; a Photos library is not a project).
 SKIP_DIR_SUFFIXES = (".app", ".photoslibrary")
+# Linux pseudo-filesystems (only relevant when scanning from `/`). Matched by
+# absolute path so a project folder that happens to be called `proc` is still scanned.
+SKIP_ABS_PATHS = frozenset({"/proc", "/sys", "/dev", "/run"})
 
 SCAN_WORKERS = 12
 CHILDREN_WORKERS = 8
@@ -394,7 +397,7 @@ def scan(
 
             for e in entries:
                 name = e.name
-                if _skip_dir(name):
+                if _skip_dir(name) or e.path in SKIP_ABS_PATHS:
                     continue
                 try:
                     if e.is_dir(follow_symlinks=False):

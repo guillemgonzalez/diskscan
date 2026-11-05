@@ -44,6 +44,7 @@ For `pyvenv.cfg` environments the label is `<kind> · py <major.minor>`, for exa
 Directories that are never descended into while looking for targets:
 
 - Names: `.git`, `.hg`, `.svn`, `.Trash`, `.Trashes`, `.Spotlight-V100`, `.fseventsd`, `.TemporaryItems`, `.DocumentRevisions-V100`, `$RECYCLE.BIN`, `System Volume Information`.
+- Absolute paths (Linux pseudo-filesystems, only relevant when scanning from `/`): `/proc`, `/sys`, `/dev`, `/run`. Matched by full path, so a project folder named `proc` is still scanned.
 - Suffixes (macOS bundles): `.app`, `.photoslibrary`. An Electron app ships its own `node_modules` and a Photos library is not a project, so these are ignored.
 - Symbolic links to directories are never followed during the walk.
 
@@ -100,7 +101,7 @@ Opening a target lists its immediate entries on demand (8 worker threads) and ca
 | `d` / `delete` | delete the selection (asks for confirmation) |
 | `t` | cycle filter: all / node_modules / venvs |
 | `s` | toggle sort: size / name |
-| `o` | reveal in Finder |
+| `o` | reveal in Finder (macOS) / file manager (Linux) |
 | `c` | copy path to clipboard |
 | `r` | rescan |
 | `esc` | cancel a running scan |
@@ -152,4 +153,4 @@ A path that fails a check is skipped and reported with the reason. Errors on one
 - **Fallback matches can be real Python installs** (pyenv versions, etc.). Read the path before deleting.
 - **External drives and protected folders** may need Full Disk Access for your terminal app (System Settings > Privacy & Security > Full Disk Access); unreadable folders are skipped or flagged `unreadable`.
 - **Sizes are a snapshot.** Nothing is watched; press `r` to rescan.
-- **Reveal in Finder / copy** use `open -R` and `pbcopy`, so they are macOS-only.
+- **Reveal / copy** are OS-specific. macOS: `open -R` (Finder) and `pbcopy`. Linux: the freedesktop `FileManager1.ShowItems` D-Bus call, falling back to `xdg-open` on the parent folder; clipboard via `wl-copy`, `xclip` or `xsel`, falling back to the terminal's OSC 52 clipboard when none is available (e.g. over SSH).

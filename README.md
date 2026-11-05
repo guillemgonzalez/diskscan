@@ -22,7 +22,7 @@
 
 Every JavaScript project carries a `node_modules`. Every Python project carries a virtualenv, and they're called
 `.venv`, `venv`, `env`, `.tox/py312` or whatever someone typed that day. A few hundred projects later they add up to
-tens or hundreds of gigabytes, and you can't see them in Finder.
+tens or hundreds of gigabytes, and your file browser won't tell you where.
 
 diskscan walks a folder, finds them all by what they *are* rather than what they're named, and shows them in a fast
 terminal UI so you can decide what to delete.
@@ -127,7 +127,7 @@ The header shows how many are selected and how much space that is.
 | `d` / `delete` | Delete ticked folders (type `DELETE` to confirm) |
 | `t` | Filter: all / node_modules only / venvs only |
 | `s` | Sort by size / name |
-| `o` | Reveal in Finder |
+| `o` | Reveal in Finder (macOS) or your file manager (Linux) |
 | `c` | Copy path |
 | `r` | Rescan |
 | `esc` | Stop a running scan |
@@ -210,6 +210,19 @@ whichever folder it found first. Deleting one of those folders only frees the fi
 <br>
 
 On macOS, give your terminal app <b>Full Disk Access</b> in System Settings → Privacy & Security, then rescan with `r`.
+On Linux, folders you don't own may need `sudo diskscan /path`.
+</details>
+
+<details>
+<summary><b>Does it work on Linux?</b></summary>
+
+<br>
+
+Yes, everything works the same, and the test suite runs on Linux too. Linux-specific behavior:
+
+- **`o` reveal** asks your file manager (Nautilus, Dolphin, Nemo, Thunar…) to highlight the folder, or opens the parent folder with `xdg-open`.
+- **`c` copy** uses `wl-copy` (Wayland), `xclip` or `xsel` (X11). Over SSH or without any of those it uses your terminal's clipboard support (OSC 52), which works in most modern terminals.
+- Scanning from `/` skips `/proc`, `/sys`, `/dev` and `/run`.
 </details>
 
 <details>

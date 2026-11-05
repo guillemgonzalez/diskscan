@@ -158,6 +158,7 @@ def test_progress_and_cancel(tmp_path):
     assert res.target_count == 0
 
 
+@pytest.mark.skipif(hasattr(os, "geteuid") and os.geteuid() == 0, reason="root ignores directory permissions")
 def test_unreadable_dir_sets_error(tmp_path):
     write(str(tmp_path / "node_modules" / "ok" / "f"))
     locked = tmp_path / "node_modules" / "locked"

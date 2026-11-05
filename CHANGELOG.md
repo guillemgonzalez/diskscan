@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Linux support for reveal (`o`): file manager via D-Bus `FileManager1`, falling back to `xdg-open`.
+- Linux support for copy (`c`): `wl-copy`, `xclip` or `xsel`, falling back to the terminal clipboard (OSC 52) over SSH.
+
+### Changed
+
+- Scanning from `/` skips the Linux pseudo-filesystems `/proc`, `/sys`, `/dev` and `/run`.
+- The test suite now runs on Linux (the unreadable-folder test is skipped when running as root).
+
 ## [0.1.0] - 2026-11-05
 
 First release.

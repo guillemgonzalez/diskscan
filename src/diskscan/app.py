@@ -22,6 +22,7 @@ from textual.widgets import Button, Input, Static
 
 from .deleter import TARGET_KINDS, DeleteOutcome, delete_targets, prune_tree
 from .models import Kind, Node, ScanProgress
+from .platform_utils import FILE_MANAGER, copy_to_clipboard, reveal
 
 try:  # scanner.py is written separately; the demo works without it
     from .scanner import format_size  # type: ignore
@@ -439,7 +440,7 @@ class HelpScreen(ModalScreen[None]):
             ("d  delete", "delete selected (asks you to type DELETE)"),
             ("t", "cycle filter: all / node_modules / venvs"),
             ("s", "toggle sort: size / name"),
-            ("o", "reveal in Finder"),
+            ("o", f"reveal in {FILE_MANAGER}"),
             ("c", "copy path to clipboard"),
             ("r", "rescan"),
             ("esc", "cancel a running scan"),
@@ -1301,10 +1302,9 @@ class DiskscanApp(App[None]):
             self.flash("demo: would reveal " + tilde(path))
             return
         try:
-            subprocess.Popen(["open", "-R", path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            self.flash("revealed in Finder")
-        except OSError as e:
-            self.flash(f"open failed: {e}")
+            self.flash(reveal(path))
+        except (OSError, subprocess.SubprocessError) as e:
+            self.flash(f"reveal failed: {e}")
 
     def action_copy_path(self) -> None:
         row = self._selected()
@@ -1312,7 +1312,9 @@ class DiskscanApp(App[None]):
             return
         path = row.node.path if row.node else self.current.path
         try:
-            subprocess.run(["pbcopy"], input=path.encode(), check=True, timeout=3)
+            if not copy_to_clipboard(path):
+                # no native tool (SSH / headless Linux): ask the terminal via OSC 52
+                self.copy_to_clipboard(path)
             self.flash("copied " + mid_trunc(tilde(path), 50))
         except (OSError, subprocess.SubprocessError) as e:
             self.flash(f"copy failed: {e}")
