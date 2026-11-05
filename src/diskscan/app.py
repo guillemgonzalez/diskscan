@@ -15,6 +15,7 @@ from textual import events
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical, VerticalScroll
+from textual.css.query import NoMatches
 from textual.screen import ModalScreen
 from textual.widget import Widget
 from textual.widgets import Button, Input, Static
@@ -821,12 +822,15 @@ class DiskscanApp(App[None]):
 
     def _tick(self) -> None:
         self._frame += 1
-        if self.state == "scanning":
-            self._render_scan()
-        elif self._deleting and self._del_screen is not None:
-            self._render_delete()
-        elif self.busy:
-            self._render_status()
+        try:
+            if self.state == "scanning":
+                self._render_scan()
+            elif self._deleting and self._del_screen is not None:
+                self._render_delete()
+            elif self.busy:
+                self._render_status()
+        except NoMatches:
+            pass  # widgets already torn down (app is exiting)
 
     # ---- data helpers
     def tally(self, node: Node, filt: str | None = None) -> tuple[int, int, int]:
